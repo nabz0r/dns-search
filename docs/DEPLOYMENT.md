@@ -1,142 +1,122 @@
-# Guide de Déploiement DNS Search
+# Guide de Déploiement
 
-Ce guide détaille les étapes pour déployer l'application DNS Search en production.
+## Préparation Locale
 
-## Architecture
+1. Configuration du Backend :
+   ```bash
+   cd server
+   cp .env.example .env
+   # Éditez .env avec vos configurations
+   ```
 
-L'application se compose de trois parties principales :
+   Variables d'environnement requises :
+   ```env
+   MONGODB_URI=votre_uri_mongodb
+   PORT=3001
+   CORS_ORIGIN=http://localhost:3000
+   NODE_ENV=production
+   ```
 
-1. Frontend React (interface utilisateur)
-2. Backend Node.js/Express (API et logique métier)
-3. Base de données MongoDB (stockage des recherches)
+2. Configuration du Frontend :
+   ```bash
+   cp .env.example .env
+   # Éditez .env avec vos configurations
+   ```
 
-## Étapes de Déploiement
+   Variables requises :
+   ```env
+   REACT_APP_API_URL=https://votre-api.domain.com
+   ```
 
-### 1. Base de Données
+## Déploiement du Backend
 
-Créez une base de données MongoDB :
+### Sur DigitalOcean App Platform
 
-1. Créez un compte gratuit sur MongoDB Atlas (https://www.mongodb.com/cloud/atlas)
-2. Créez un nouveau cluster
-3. Obtenez l'URI de connexion
-4. Notez les identifiants pour la configuration
+1. Créez une nouvelle application
+2. Sélectionnez le répertoire 'server'
+3. Configurez les variables d'environnement
+4. Déployez
 
-### 2. Backend
+### Sur Heroku
 
-Pour déployer sur Heroku :
+1. Créez une nouvelle application :
+   ```bash
+   heroku create dns-search-api
+   ```
 
-1. Installez Heroku CLI
-2. Initialisez un repo Git dans le dossier 'server' :
-```bash
-cd server
-git init
-heroku create dns-search-api
-```
+2. Configurez les variables d'environnement :
+   ```bash
+   heroku config:set MONGODB_URI=votre_uri_mongodb
+   heroku config:set NODE_ENV=production
+   ```
 
-3. Configurez les variables d'environnement :
-```bash
-heroku config:set MONGODB_URI=votre_uri_mongodb
-heroku config:set PORT=3001
-heroku config:set NODE_ENV=production
-```
+3. Déployez :
+   ```bash
+   git subtree push --prefix server heroku main
+   ```
 
-4. Déployez :
-```bash
-git push heroku main
-```
+## Déploiement du Frontend
 
-### 3. Frontend
+### Sur Vercel
 
-Pour déployer sur Vercel :
+1. Importez le projet depuis GitHub
+2. Configurez les variables d'environnement
+3. Déployez
 
-1. Créez un compte sur Vercel
-2. Installez Vercel CLI
-3. Configurez les variables d'environnement :
-   - REACT_APP_API_URL=https://votre-api-heroku.herokuapp.com
+### Sur Netlify
 
-4. Déployez :
-```bash
-vercel deploy
-```
+1. Connectez votre repo GitHub
+2. Configuration du build :
+   - Build command: `npm run build`
+   - Publish directory: `build`
+3. Ajoutez les variables d'environnement
 
-## Vérification Post-Déploiement
+## Base de Données
 
-1. Testez les points d'entrée de l'API :
-   - POST /api/search
-   - GET /api/recent
+### MongoDB Atlas
 
-2. Vérifiez les logs dans Heroku :
-```bash
-heroku logs --tail
-```
+1. Créez un cluster (gratuit)
+2. Configurez l'accès réseau
+3. Créez un utilisateur de base de données
+4. Récupérez l'URI de connexion
 
-3. Surveillez MongoDB Atlas pour les métriques de base de données
+### Sécurité
 
-## Sécurité
+Vérifiez les points suivants :
 
-Le code inclut déjà :
-- Protection CORS
-- Validation des entrées
-- Logging sécurisé
+1. Backend :
+   - Rate limiting actif
+   - CORS configuré
+   - Validation des entrées
+   - Logs en place
 
-Mesures supplémentaires recommandées :
+2. Base de données :
+   - Accès limité par IP
+   - Authentification forte
+   - Backups actifs
 
-1. Ajoutez un rate limiting :
-```javascript
-const rateLimit = require('express-rate-limit');
-
-app.use('/api/', rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limite par IP
-}));
-```
-
-2. Configurez un pare-feu applicatif (WAF)
-3. Activez HTTPS uniquement
+3. Frontend :
+   - HTTPS actif
+   - Variables d'environnement sécurisées
 
 ## Monitoring
 
-Le code inclut Winston pour les logs. Configuration additionnelle recommandée :
+1. Configurer les alertes dans MongoDB Atlas
+2. Activer les métriques sur votre plateforme d'hébergement
+3. Vérifier les logs régulièrement
 
-1. Sentry pour le suivi des erreurs :
-```javascript
-const Sentry = require('@sentry/node');
-Sentry.init({ dsn: 'votre-dsn' });
-```
+## Maintenance
 
-2. Configurer des alertes dans MongoDB Atlas
-3. Mettre en place NewRelic ou Datadog
+Routines recommandées :
 
-## Mise à l'échelle
+1. Quotidienne :
+   - Vérification des logs d'erreur
+   - Surveillance des métriques
 
-Pour gérer la croissance :
+2. Hebdomadaire :
+   - Analyse des performances
+   - Vérification des sauvegardes
 
-1. Activez la mise en cache DNS :
-```javascript
-const cache = new Map();
-const TTL = 3600; // 1 heure
-
-async function dnsLookup(domain) {
-  if (cache.has(domain)) {
-    const {result, timestamp} = cache.get(domain);
-    if (Date.now() - timestamp < TTL * 1000) {
-      return result;
-    }
-  }
-  const result = await dns.resolve4(domain);
-  cache.set(domain, {result, timestamp: Date.now()});
-  return result;
-}
-```
-
-2. Configurez l'auto-scaling sur Heroku
-3. Utilisez MongoDB Atlas évolutif
-4. Implémentez un CDN pour le frontend
-
-## Support
-
-En cas de problèmes :
-
-1. Consultez les logs Heroku et MongoDB Atlas
-2. Vérifiez le statut des services : https://status.heroku.com
-3. Contactez le support technique si nécessaire
+3. Mensuelle :
+   - Mise à jour des dépendances
+   - Revue des accès
