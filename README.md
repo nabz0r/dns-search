@@ -1,20 +1,41 @@
 # DNS Search Tool
 
-Un outil simple de recherche DNS avec stockage dans un fichier texte.
+Application de recherche DNS avec stockage des résultats.
 
-## Features
-- Interface de recherche style Google
-- Stockage des requêtes dans un fichier texte
-- Pas d'authentification requise
+## Installation Rapide
 
-## Structure
-```
-dig_requests.txt (format)
-timestamp|domain|ip|dns_type|response|query_time
+1. Clonez le repository :
+```bash
+git clone https://github.com/nabz0r/dns-search.git
+cd dns-search
 ```
 
-## Installation
+2. Installez les dépendances du frontend :
 ```bash
 npm install
-npm start
 ```
+
+3. Installez les dépendances du backend :
+```bash
+cd server
+npm install
+cd ..
+```
+
+4. Créez les fichiers de configuration :
+```bash
+cp .env.example .env
+cd server
+cp .env.example .env
+cd ..
+```
+
+5. Démarrez l'application en mode développement :
+```bash
+npm run dev
+```
+
+L'application sera disponible sur http://localhost:3000
+L'API sera disponible sur http://localhost:3001
+
+Consultez le dossier docs/ pour plus d'informations sur le déploiement et la configuration.
