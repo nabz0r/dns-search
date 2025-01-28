@@ -213,6 +213,6 @@ Si vous rencontrez des difficultés :
 
 ## Versions
 
-- Version actuelle : 1.0.0
+- Version actuelle : 1.1.0
 - Dernière mise à jour : 2025-01-28
 - Changelog : [CHANGELOG.md](CHANGELOG.md)
