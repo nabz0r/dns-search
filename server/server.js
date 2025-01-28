@@ -25,7 +25,13 @@ if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console());
 }
 
-// Rate limiting - 100 requêtes par IP par 15 minutes
+// Validation du domaine
+const isValidDomain = (domain) => {
+  const pattern = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+  return pattern.test(domain);
+};
+
+// Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -67,7 +73,11 @@ const searchSchema = new mongoose.Schema({
   domain: { 
     type: String, 
     required: true,
-    maxLength: 255
+    maxLength: 255,
+    validate: {
+      validator: isValidDomain,
+      message: 'Format de domaine invalide'
+    }
   },
   ip: { 
     type: String,
@@ -99,7 +109,7 @@ searchSchema.index({ timestamp: -1 });
 
 const Search = mongoose.model('Search', searchSchema);
 
-// Cache simple pour les résultats DNS
+// Cache avec gestion du timeout
 const cache = new Map();
 const TTL = 3600; // 1 heure
 
@@ -119,7 +129,7 @@ app.post('/api/search', async (req, res) => {
   const startTime = process.hrtime();
   const { domain } = req.body;
 
-  if (!domain || domain.length > 255) {
+  if (!domain || !isValidDomain(domain)) {
     return res.status(400).json({ error: 'Domaine invalide' });
   }
 
@@ -131,7 +141,13 @@ app.post('/api/search', async (req, res) => {
       addresses = cached;
       logger.info(`Résultat caché utilisé pour ${domain}`);
     } else {
-      addresses = await dns.resolve4(domain);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout DNS')), 10000);
+      });
+      addresses = await Promise.race([
+        dns.resolve4(domain),
+        timeoutPromise
+      ]);
       cache.set(domain, { result: addresses, timestamp: Date.now() });
     }
 
