@@ -1,85 +1,59 @@
 # DNS Search Tool
 
-## Installation Rapide en Un Clic
+## Démarrage Rapide
+
+Installation en une commande :
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nabz0r/dns-search/main/scripts/install.sh | bash
 ```
 
-Ou si vous avez déjà cloné le repo :
+L'application sera accessible sur http://localhost:3000
 
-```bash
-./scripts/install.sh
-```
+## Points Clés
 
-## Prérequis Minimaux
-
-- 512 MB RAM minimum
-- 1 GB espace disque
-- Ports 3000 et 3001 disponibles
-- Droits d'administrateur pour l'installation de MongoDB
-
-## Vérification de l'Environnement
-
-Pour vérifier que votre système est prêt :
-
-```bash
-./scripts/check-environment.sh
-```
-
-## Structure du Projet
-
-```
-dns-search/
-├── src/              # Code source frontend React
-├── server/           # Serveur backend Node.js
-├── scripts/          # Scripts d'installation et utilitaires
-└── docs/             # Documentation détaillée
-```
-
-## Fonctionnalités
-
-- Interface utilisateur intuitive style Google
-- Recherche DNS rapide et mise en cache
+- Interface simple et moderne
 - Historique des recherches
-- Monitoring et logging
+- Déploiement facile
+- Installation automatisée
 
-## Documentation Détaillée
+## Documentation
 
-- [Guide de Déploiement](docs/DEPLOYMENT.md)
-- [Architecture de la BDD](docs/DATABASE.md)
-- [Guide Développeur](docs/DEVELOPMENT.md)
-- [API Reference](docs/API.md)
+Un guide complet est disponible dans [GUIDE.md](GUIDE.md). Il couvre tous les aspects de l'application :
 
-## Dépannage Rapide
+- Installation et configuration
+- Utilisation quotidienne
+- Dépannage détaillé
+- Maintenance et mises à jour
 
-Si l'installation échoue :
+## Problèmes Fréquents
 
-1. Vérifiez les logs dans `install.log`
-2. Exécutez `./scripts/check-environment.sh`
-3. Consultez la section troubleshooting dans [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+Si vous rencontrez des difficultés lors de l'installation :
+
+1. Vérifiez les prérequis système :
+   ```bash
+   ./scripts/check-environment.sh
+   ```
+
+2. Consultez les logs :
+   ```bash
+   cat install.log
+   ```
+
+3. Exécutez le diagnostic :
+   ```bash
+   ./scripts/diagnose.sh
+   ```
+
+Pour plus de détails, consultez la section Dépannage dans [GUIDE.md](GUIDE.md).
 
 ## Support
 
-Si vous rencontrez des problèmes :
+Besoin d'aide ? 
 
-1. Vérifiez la [FAQ](docs/FAQ.md)
-2. Consultez les [Issues GitHub](https://github.com/nabz0r/dns-search/issues)
-3. Ouvrez une nouvelle issue avec les logs et détails
-
-## Maintenance
-
-Pour les mises à jour :
-
-```bash
-./scripts/update.sh
-```
-
-Pour nettoyer l'installation :
-
-```bash
-./scripts/cleanup.sh
-```
+1. Consultez [GUIDE.md](GUIDE.md)
+2. Vérifiez les [Issues GitHub](https://github.com/nabz0r/dns-search/issues)
+3. Ouvrez un ticket avec les détails du problème
 
 ## Licence
 
