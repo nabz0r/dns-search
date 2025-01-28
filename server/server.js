@@ -26,3 +26,39 @@ const logger = createLogger({
     new transports.File({ filename: 'combined.log' })
   ]
 });
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new transports.Console());
+}
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Trop de requêtes depuis cette IP'
+});
+
+// Middleware
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+}));
+app.use('/api/', limiter);
+app.use(express.json());
+
+// Connexion MongoDB avec retry
+const connectDB = async (retries = 5) => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    logger.info('Connecté à MongoDB');
+  } catch (err) {
+    if (retries > 0) {
+      logger.warn(`Reconnexion à MongoDB (${retries} tentatives restantes)`);
+      setTimeout(() => connectDB(retries - 1), 5000);
+    } else {
+      logger.error('Erreur MongoDB:', err);
+      process.exit(1);
+    }
+  }
+};
+
+connectDB();
