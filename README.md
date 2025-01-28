@@ -1,64 +1,86 @@
 # DNS Search Tool
 
-Outil de recherche DNS avec stockage des résultats dans MongoDB et interface moderne.
-
-## Installation One-Click
+## Installation Rapide en Un Clic
 
 ```bash
-./install.sh
+curl -sSL https://raw.githubusercontent.com/nabz0r/dns-search/main/scripts/install.sh | bash
 ```
 
-Ou manuellement :
+Ou si vous avez déjà cloné le repo :
 
-1. Prérequis :
-   ```bash
-   # Vérifiez que vous avez node >= 16 et npm >= 8
-   node -v
-   npm -v
-   ```
+```bash
+./scripts/install.sh
+```
 
-2. Installation :
-   ```bash
-   git clone https://github.com/nabz0r/dns-search.git
-   cd dns-search
-   npm install
-   cd server && npm install && cd ..
-   ```
+## Prérequis Minimaux
 
-3. Configuration :
-   ```bash
-   cp .env.example .env
-   cd server && cp .env.example .env && cd ..
-   ```
+- 512 MB RAM minimum
+- 1 GB espace disque
+- Ports 3000 et 3001 disponibles
+- Droits d'administrateur pour l'installation de MongoDB
 
-4. Démarrage :
-   ```bash
-   npm run dev
-   ```
+## Vérification de l'Environnement
 
-L'application est disponible sur http://localhost:3000
+Pour vérifier que votre système est prêt :
 
-## Architecture
+```bash
+./scripts/check-environment.sh
+```
+
+## Structure du Projet
 
 ```
 dns-search/
-├── frontend/          # React avec Tailwind
-├── server/           # Express + MongoDB
-├── docs/             # Documentation
-└── scripts/          # Scripts d'automation
+├── src/              # Code source frontend React
+├── server/           # Serveur backend Node.js
+├── scripts/          # Scripts d'installation et utilitaires
+└── docs/             # Documentation détaillée
 ```
 
-## Documentation
+## Fonctionnalités
+
+- Interface utilisateur intuitive style Google
+- Recherche DNS rapide et mise en cache
+- Historique des recherches
+- Monitoring et logging
+
+## Documentation Détaillée
 
 - [Guide de Déploiement](docs/DEPLOYMENT.md)
-- [Guide de Développement](docs/DEVELOPMENT.md)
 - [Architecture de la BDD](docs/DATABASE.md)
+- [Guide Développeur](docs/DEVELOPMENT.md)
 - [API Reference](docs/API.md)
 
-## Roadmap
+## Dépannage Rapide
 
-- [ ] Cache DNS intelligent
-- [ ] Interface d'administration
-- [ ] Support multi-utilisateurs
-- [ ] Export des données
-- [ ] Statistiques avancées
+Si l'installation échoue :
+
+1. Vérifiez les logs dans `install.log`
+2. Exécutez `./scripts/check-environment.sh`
+3. Consultez la section troubleshooting dans [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+## Support
+
+Si vous rencontrez des problèmes :
+
+1. Vérifiez la [FAQ](docs/FAQ.md)
+2. Consultez les [Issues GitHub](https://github.com/nabz0r/dns-search/issues)
+3. Ouvrez une nouvelle issue avec les logs et détails
+
+## Maintenance
+
+Pour les mises à jour :
+
+```bash
+./scripts/update.sh
+```
+
+Pour nettoyer l'installation :
+
+```bash
+./scripts/cleanup.sh
+```
+
+## Licence
+
+MIT
