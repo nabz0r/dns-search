@@ -1,41 +1,64 @@
 # DNS Search Tool
 
-Application de recherche DNS avec stockage des résultats.
+Outil de recherche DNS avec stockage des résultats dans MongoDB et interface moderne.
 
-## Installation Rapide
+## Installation One-Click
 
-1. Clonez le repository :
 ```bash
-git clone https://github.com/nabz0r/dns-search.git
-cd dns-search
+./install.sh
 ```
 
-2. Installez les dépendances du frontend :
-```bash
-npm install
+Ou manuellement :
+
+1. Prérequis :
+   ```bash
+   # Vérifiez que vous avez node >= 16 et npm >= 8
+   node -v
+   npm -v
+   ```
+
+2. Installation :
+   ```bash
+   git clone https://github.com/nabz0r/dns-search.git
+   cd dns-search
+   npm install
+   cd server && npm install && cd ..
+   ```
+
+3. Configuration :
+   ```bash
+   cp .env.example .env
+   cd server && cp .env.example .env && cd ..
+   ```
+
+4. Démarrage :
+   ```bash
+   npm run dev
+   ```
+
+L'application est disponible sur http://localhost:3000
+
+## Architecture
+
+```
+dns-search/
+├── frontend/          # React avec Tailwind
+├── server/           # Express + MongoDB
+├── docs/             # Documentation
+└── scripts/          # Scripts d'automation
 ```
 
-3. Installez les dépendances du backend :
-```bash
-cd server
-npm install
-cd ..
-```
+## Documentation
 
-4. Créez les fichiers de configuration :
-```bash
-cp .env.example .env
-cd server
-cp .env.example .env
-cd ..
-```
+- [Guide de Déploiement](docs/DEPLOYMENT.md)
+- [Guide de Développement](docs/DEVELOPMENT.md)
+- [Architecture de la BDD](docs/DATABASE.md)
+- [API Reference](docs/API.md)
 
-5. Démarrez l'application en mode développement :
-```bash
-npm run dev
-```
+## Roadmap
 
-L'application sera disponible sur http://localhost:3000
-L'API sera disponible sur http://localhost:3001
-
-Consultez le dossier docs/ pour plus d'informations sur le déploiement et la configuration.
+- [ ] Cache DNS intelligent
+- [ ] Interface d'administration
+- [ ] Support multi-utilisateurs
+- [ ] Export des données
+- [ ] Statistiques avancées
