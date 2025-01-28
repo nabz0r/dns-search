@@ -52,17 +52,6 @@ Solutions possibles :
 - Vérifiez que tous les fichiers .jsx sont bien présents
 - Réinitialisez le cache du navigateur
 
-## Logs et Débogage
-
-Les logs sont écrits dans :
-- La console du navigateur pour les erreurs frontend
-- dig_requests.txt pour l'historique des recherches
-
-Pour activer les logs détaillés, ajoutez dans le fichier .env :
-```
-REACT_APP_DEBUG=true
-```
-
 ## Support
 
 Si vous rencontrez d'autres problèmes :
