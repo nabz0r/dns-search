@@ -1,0 +1,2 @@
+# Fichier de stockage des requêtes DNS
+# Format: timestamp|domain|ip|dns_type|response|query_time
