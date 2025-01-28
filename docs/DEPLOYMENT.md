@@ -1,97 +1,142 @@
-# Guide de Déploiement
+# Guide de Déploiement DNS Search
 
-## Limitations Actuelles
+Ce guide détaille les étapes pour déployer l'application DNS Search en production.
 
-L'application dans son état actuel utilise `window.fs` pour stocker les données localement, ce qui ne fonctionnera pas en production. Pour un déploiement en ligne, plusieurs modifications sont nécessaires.
+## Architecture
 
-## Solutions Recommandées
+L'application se compose de trois parties principales :
 
-### 1. Stockage des Données
-Remplacer le stockage fichier local par une base de données :
-```javascript
-// Exemple avec MongoDB
-const saveSearch = async (searchData) => {
-  await db.collection('searches').insertOne({
-    timestamp: new Date(),
-    domain: searchData.domain,
-    ip: searchData.ip,
-    type: searchData.type,
-    response: searchData.response,
-    queryTime: searchData.queryTime
-  });
-};
+1. Frontend React (interface utilisateur)
+2. Backend Node.js/Express (API et logique métier)
+3. Base de données MongoDB (stockage des recherches)
+
+## Étapes de Déploiement
+
+### 1. Base de Données
+
+Créez une base de données MongoDB :
+
+1. Créez un compte gratuit sur MongoDB Atlas (https://www.mongodb.com/cloud/atlas)
+2. Créez un nouveau cluster
+3. Obtenez l'URI de connexion
+4. Notez les identifiants pour la configuration
+
+### 2. Backend
+
+Pour déployer sur Heroku :
+
+1. Installez Heroku CLI
+2. Initialisez un repo Git dans le dossier 'server' :
+```bash
+cd server
+git init
+heroku create dns-search-api
 ```
 
-### 2. Architecture Serveur
-Ajouter un backend Node.js :
-```javascript
-// server.js
-const express = require('express');
-const app = express();
-
-app.post('/api/search', async (req, res) => {
-  // Effectuer la recherche DNS
-  // Sauvegarder dans la base de données
-  // Renvoyer le résultat
-});
-
-app.get('/api/recent', async (req, res) => {
-  // Récupérer les recherches récentes
-});
+3. Configurez les variables d'environnement :
+```bash
+heroku config:set MONGODB_URI=votre_uri_mongodb
+heroku config:set PORT=3001
+heroku config:set NODE_ENV=production
 ```
 
-### 3. Hébergement
-
-1. Frontend : Déployez sur Vercel ou Netlify
-2. Backend : Hébergez sur:
-   - Heroku
-   - DigitalOcean
-   - AWS
-3. Base de données : Utilisez:
-   - MongoDB Atlas
-   - PostgreSQL sur Heroku
-
-## Modifications Nécessaires
-
-1. Créez un fichier `.env` pour les variables d'environnement:
-```
-REACT_APP_API_URL=https://votre-api.com
-MONGODB_URI=mongodb://...
+4. Déployez :
+```bash
+git push heroku main
 ```
 
-2. Modifiez le composant DNSSearch pour utiliser l'API:
-```javascript
-const handleSearch = async () => {
-  const response = await fetch('/api/search', {
-    method: 'POST',
-    body: JSON.stringify({ domain: query })
-  });
-  const data = await response.json();
-  setResults(data);
-};
+### 3. Frontend
+
+Pour déployer sur Vercel :
+
+1. Créez un compte sur Vercel
+2. Installez Vercel CLI
+3. Configurez les variables d'environnement :
+   - REACT_APP_API_URL=https://votre-api-heroku.herokuapp.com
+
+4. Déployez :
+```bash
+vercel deploy
 ```
+
+## Vérification Post-Déploiement
+
+1. Testez les points d'entrée de l'API :
+   - POST /api/search
+   - GET /api/recent
+
+2. Vérifiez les logs dans Heroku :
+```bash
+heroku logs --tail
+```
+
+3. Surveillez MongoDB Atlas pour les métriques de base de données
 
 ## Sécurité
 
-1. Limitez le nombre de requêtes par IP
-2. Ajoutez une protection CORS
-3. Validez les entrées utilisateur
-4. Surveillez l'utilisation des ressources
+Le code inclut déjà :
+- Protection CORS
+- Validation des entrées
+- Logging sécurisé
+
+Mesures supplémentaires recommandées :
+
+1. Ajoutez un rate limiting :
+```javascript
+const rateLimit = require('express-rate-limit');
+
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limite par IP
+}));
+```
+
+2. Configurez un pare-feu applicatif (WAF)
+3. Activez HTTPS uniquement
 
 ## Monitoring
 
-1. Mettez en place des logs avec Winston ou Morgan
-2. Utilisez Sentry pour le suivi des erreurs
-3. Configurez des alertes pour:
-   - Temps de réponse élevé
-   - Erreurs fréquentes
-   - Utilisation excessive
+Le code inclut Winston pour les logs. Configuration additionnelle recommandée :
+
+1. Sentry pour le suivi des erreurs :
+```javascript
+const Sentry = require('@sentry/node');
+Sentry.init({ dsn: 'votre-dsn' });
+```
+
+2. Configurer des alertes dans MongoDB Atlas
+3. Mettre en place NewRelic ou Datadog
 
 ## Mise à l'échelle
 
-Pour gérer un grand nombre d'utilisateurs:
+Pour gérer la croissance :
 
-1. Mettez en cache les résultats DNS fréquents
-2. Utilisez un CDN pour le frontend
-3. Configurez l'auto-scaling sur votre hébergeur
-4. Optimisez les requêtes base de données
+1. Activez la mise en cache DNS :
+```javascript
+const cache = new Map();
+const TTL = 3600; // 1 heure
+
+async function dnsLookup(domain) {
+  if (cache.has(domain)) {
+    const {result, timestamp} = cache.get(domain);
+    if (Date.now() - timestamp < TTL * 1000) {
+      return result;
+    }
+  }
+  const result = await dns.resolve4(domain);
+  cache.set(domain, {result, timestamp: Date.now()});
+  return result;
+}
+```
+
+2. Configurez l'auto-scaling sur Heroku
+3. Utilisez MongoDB Atlas évolutif
+4. Implémentez un CDN pour le frontend
+
+## Support
+
+En cas de problèmes :
+
+1. Consultez les logs Heroku et MongoDB Atlas
+2. Vérifiez le statut des services : https://status.heroku.com
+3. Contactez le support technique si nécessaire
