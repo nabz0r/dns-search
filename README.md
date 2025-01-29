@@ -16,6 +16,9 @@
 
 ---
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-nabz0r-yellow?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://buymeacoffee.com/nabz0r)
+
+
 ## ⚡️ Démarrage Ultra Rapide
 
 Lancez votre recherche DNS en une commande :
